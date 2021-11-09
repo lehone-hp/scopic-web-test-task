@@ -70,87 +70,43 @@
         </div>
       </div>
       <div class="col-lg-8 col-xl-9">
-        <div class="product-card-deck">
-          <div class="row row-md">
-            <div class="col-sm-6 col-lg-4 mb-3">
-              <div class="product-card">
-                <div class="img-wrapper"></div>
-                <div class="body">
-                  <div class="pr-3">
-                    <h6 class="mb-1">Product No1</h6>
-                    <small class="overflow-ellipsis">Lorem ipsum dolor sit amet</small>
-                  </div>
-                  <router-link to="/hope" class="default-btn">Bid Now</router-link>
-                </div>
+        <div v-if="show_skeleton"
+             class="row row-md">
+          <div class="col-sm-6 col-lg-4 mb-4"
+               v-for="(item, key) in 6"
+               :key="key">
+            <Skeleton height="15rem"/>
+            <div class="mt-1 d-flex">
+              <div class="w-75 pr-3">
+                <Skeleton :count="2" height="18px"/>
               </div>
-            </div>
-            <div class="col-sm-6 col-lg-4 mb-3">
-              <div class="product-card">
-                <div class="img-wrapper"></div>
-                <div class="body">
-                  <div class="pr-3">
-                    <h6 class="mb-1">Product No1</h6>
-                    <small class="overflow-ellipsis">Lorem ipsum dolor sit amet</small>
-                  </div>
-                  <a href="#" class="default-btn">Bid Now</a>
-                </div>
-              </div>
-            </div>
-            <div class="col-sm-6 col-lg-4 mb-3">
-              <div class="product-card">
-                <div class="img-wrapper"></div>
-                <div class="body">
-                  <div class="pr-3">
-                    <h6 class="mb-1">Product No1</h6>
-                    <small class="overflow-ellipsis">Lorem ipsum dolor sit amet</small>
-                  </div>
-                  <a href="#" class="default-btn">Bid Now</a>
-                </div>
-              </div>
-            </div>
-            <div class="col-sm-6 col-lg-4 mb-3">
-              <div class="product-card">
-                <div class="img-wrapper"></div>
-                <div class="body">
-                  <div class="pr-3">
-                    <h6 class="mb-1">Product No1</h6>
-                    <small class="overflow-ellipsis">Lorem ipsum dolor sit amet</small>
-                  </div>
-                  <a href="#" class="default-btn">Bid Now</a>
-                </div>
-              </div>
-            </div>
-            <div class="col-sm-6 col-lg-4 mb-3">
-              <div class="product-card">
-                <div class="img-wrapper"></div>
-                <div class="body">
-                  <div class="pr-3">
-                    <h6 class="mb-1">Product No1</h6>
-                    <small class="overflow-ellipsis">Lorem ipsum dolor sit amet</small>
-                  </div>
-                  <a href="#" class="default-btn">Bid Now</a>
-                </div>
-              </div>
-            </div>
-            <div class="col-sm-6 col-lg-4 mb-3">
-              <div class="product-card">
-                <div class="img-wrapper"></div>
-                <div class="body">
-                  <div class="pr-3">
-                    <h6 class="mb-1">Product No1</h6>
-                    <small class="overflow-ellipsis">Lorem ipsum dolor sit amet</small>
-                  </div>
-                  <a href="#" class="default-btn">Bid Now</a>
-                </div>
+              <div class="w-25">
+                <Skeleton height="42px"/>
               </div>
             </div>
           </div>
         </div>
+        <template v-else>
+          <div v-if="products.length > 0" class="product-card-deck">
+            <div class="row row-md">
+              <div class="col-sm-6 col-lg-4 mb-4"
+                   v-for="product in products"
+                   :key="product.id">
+                <ProductCard :product="product"></ProductCard>
+              </div>
+            </div>
 
-
-        <empty-search
-            caption="<h4>No Items Found</h4><p>Please try searching in other categories or change the min bid</p>"></empty-search>
-
+            <div class="py-4 text-center" v-if="show_more_btn">
+              <button-spinner
+                  :spinner="show_spinner"
+                  @click="fetchProducts">Load More
+              </button-spinner>
+            </div>
+          </div>
+          <empty-search
+              v-else
+              caption="<h4>No Items Found</h4><p>Please try searching in other categories or change the min bid</p>"></empty-search>
+        </template>
       </div>
     </div>
   </div>
@@ -159,22 +115,69 @@
 <script>
 import VueSlider from 'vue-slider-component'
 import 'vue-slider-component/theme/default.css'
+import {Skeleton} from 'vue-loading-skeleton';
+import ProductCard from '../ProductCard';
+import {api} from "../../plugins/api";
 
 export default {
   name: "ProductSearchComponent",
   components: {
-    VueSlider
+    VueSlider,
+    Skeleton,
+    ProductCard
   },
   data: function () {
     return {
+      products: [],
+      show_filter: false,
+      show_skeleton: false,
+      show_spinner: false,
+      show_more_btn: false,
       filter: {
-        min_bid: 0
+        min_bid: 0,
+        sort: 'popular',
+        categories: [],
+        page: 1,
+        limit: 6,
       },
       formatter: v => `$${('' + v).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`,
-      show_filter: false
     }
   },
+  mounted: function () {
+    this.fetchProducts();
+  },
   methods: {
+    fetchProducts: function () {
+      if (!(this.show_skeleton || this.show_spinner)) {
+        this.show_skeleton = (this.filter.page === 1);
+        this.show_spinner = true;
+
+        api
+            .get(`/products`, {
+              params: this.filter
+            })
+            .then(response => {
+              if (this.filter.page === 1) {
+                this.products = response.data.data;
+              } else {
+                this.products.push(...response.data.data);
+              }
+
+              var meta = response.data.meta;
+              if (meta) {
+                this.show_more_btn = (meta.current_page < meta.last_page);
+                this.filter.page = ++meta.current_page;
+              }
+            })
+            .catch(() => {
+              // todo: alert error occurred
+            })
+            .then(() => {
+              this.show_skeleton = false;
+              this.show_spinner = false;
+            });
+      }
+    },
     toggleFilter: function () {
       this.show_filter = !this.show_filter;
     }

@@ -19,20 +19,19 @@ import ProductSearchComponent from "./components/pages/ProductSearchComponent";
 import ProductDetailComponent from "./components/pages/ProductDetailComponent";
 import SettingsComponent from "./components/pages/SettingsComponent";
 
-Vue.component('font-awesome-icon', FontAwesomeIcon)
-library.add(faFilter)
-
 Vue.config.productionTip = false
 
 Vue.use(Router)
 Vue.use(BootstrapVue)
 
+// Font Awesome
+Vue.component('font-awesome-icon', FontAwesomeIcon)
+library.add(faFilter)
 
 // Util Components
 Vue.component('modal', require('./components/utils/Modal').default);
-Vue.component('divloader', require('./components/utils/DivLoader').default);
+Vue.component('button-spinner', require('./components/utils/ButtonSpinner').default);
 Vue.component('empty-search', require('./components/utils/EmptySearchComponent').default);
-
 
 const router = new Router({
     routes: [
