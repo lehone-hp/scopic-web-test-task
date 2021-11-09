@@ -1,5 +1,6 @@
 <template>
   <button class="default-btn loading"
+          type="button"
           :disabled="spinner"
           v-on:click="handleClick">
     <slot></slot>

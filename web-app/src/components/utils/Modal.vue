@@ -42,7 +42,7 @@ export default {
   data: function () {
     return {
       'is_modal_visible': false,
-      'oktext_display': this.oktext ? this.oktext : 'Okay',
+      'oktext_display': this.oktext || 'Okay',
     }
   },
   computed: {

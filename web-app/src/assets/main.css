@@ -188,6 +188,10 @@ a:hover {
     max-height: 4rem;
 }
 
+.main-nav a {
+    text-decoration: none;
+}
+
 .auth-block {
     display: flex;
     align-items: center;
@@ -204,6 +208,16 @@ a:hover {
     width: 100%;
 }
 
+.main-nav .dropdown-menu {
+    border: none;
+    box-shadow: 0 0 5px -1px rgb(0 0 0 / 15%)
+}
+
+.dropdown-item.active, .dropdown-item:active {
+    text-decoration: none;
+    background-color: var(--secondary);
+    color: var(--primary);
+}
 
 /*Product Search Page*/
 .filter-wrapper {

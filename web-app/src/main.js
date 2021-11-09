@@ -1,6 +1,8 @@
 import Vue from 'vue'
-import Router from 'vue-router'
 import App from './App.vue'
+import router from "./plugins/routes";
+import store from "./plugins/vuex-store";
+import Vuelidate from 'vuelidate'
 import {library} from '@fortawesome/fontawesome-svg-core'
 import {faFilter} from '@fortawesome/free-solid-svg-icons'
 import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
@@ -13,16 +15,13 @@ import 'bootstrap/dist/js/bootstrap.min.js'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
+// Main application styles
 import './assets/main.css'
-
-import ProductSearchComponent from "./components/pages/ProductSearchComponent";
-import ProductDetailComponent from "./components/pages/ProductDetailComponent";
-import SettingsComponent from "./components/pages/SettingsComponent";
 
 Vue.config.productionTip = false
 
-Vue.use(Router)
 Vue.use(BootstrapVue)
+Vue.use(Vuelidate)
 
 // Font Awesome
 Vue.component('font-awesome-icon', FontAwesomeIcon)
@@ -33,21 +32,9 @@ Vue.component('modal', require('./components/utils/Modal').default);
 Vue.component('button-spinner', require('./components/utils/ButtonSpinner').default);
 Vue.component('empty-search', require('./components/utils/EmptySearchComponent').default);
 
-const router = new Router({
-    routes: [
-        {
-            path: '/', name: 'product_search', component: ProductSearchComponent,
-        },
-        {
-            path: '/settings', name: 'settings', component: SettingsComponent,
-        },
-        {
-            path: '/:slug', name: 'product_detail', component: ProductDetailComponent,
-        }
-    ]
-});
 
 new Vue({
     render: h => h(App),
     router,
+    store: store,
 }).$mount('#app')

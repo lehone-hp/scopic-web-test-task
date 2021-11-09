@@ -19,6 +19,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::group(['namespace' => 'API'], function() {
+    Route::post('login', 'Auth\LoginController@login');
     Route::get('products/categories', 'ProductCategoryController@fetchAll');
 
     Route::get('products', 'ProductController@fetchAll');
