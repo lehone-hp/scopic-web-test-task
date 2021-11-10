@@ -258,12 +258,13 @@ a:hover {
     border-color: transparent;
 }
 
-.filter-wrapper .custom-checkbox .custom-control-input:checked ~ .custom-control-label::after {
+.filter-wrapper .custom-radio .custom-control-input:checked ~ .custom-control-label::after {
     background: var(--secondary-bold);
     width: 0.5rem;
     height: 0.5rem;
     top: 0.5rem;
     left: -1.25rem;
+    border-radius: 50%;
 }
 
 
@@ -300,10 +301,10 @@ a:hover {
         background: var(--white);
         z-index: 1;
         padding: 2rem 1rem;
-        width: 340px;
+        width: 310px;
         height: 100vh;
         top: 0;
-        left: -340px;
+        left: -310px;
         overflow: auto;
         box-shadow: 0 0 10px -2px rgb(0 0 0 / 15%);
         transition: left 0.35s;

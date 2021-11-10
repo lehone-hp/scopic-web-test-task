@@ -18,54 +18,55 @@
 
           <div class="filter-section">
             <p class="filter-section-title">Sort By</p>
-            <select class="form-control">
-              <option value="popular">Popular</option>
-              <option value="date_desc">Date Posted (DESC)</option>
-              <option value="date_desc">Date Posted (ASC)</option>
+            <select class="form-control"
+                    v-model="filter.sort"
+                    v-on:change="filterProducts">
+              <option v-for="[key, value] of sort_options"
+                      :key="key"
+                      :value="key">{{ value }}
+              </option>
             </select>
           </div>
 
           <div class="filter-section">
             <p class="filter-section-title">Minimum Bid</p>
-            <vue-slider v-model="filter.min_bid"
-                        :min="0"
-                        :max="500"
-                        :tooltip-formatter="formatter"></vue-slider>
+            <vue-slider
+                @drag-end="filterProducts"
+                v-model="filter.min_bid"
+                :min="0"
+                :max="50"
+                :tooltip-formatter="formatter"></vue-slider>
           </div>
 
-          <div class="filter-section">
+          <div class="filter-section" v-if="categories.length > 0">
             <p class="filter-section-title">Category</p>
 
-            <div class="custom-control custom-checkbox mb-2">
-              <input type="checkbox"
+            <div class="custom-control custom-radio mb-2">
+              <input type="radio"
                      class="custom-control-input"
-                     id="customCheck1">
+                     name="category"
+                     v-on:change="filterProducts"
+                     v-model="filter.category"
+                     :value="null"
+                     id="cat_all">
               <label class="custom-control-label"
-                     for="customCheck1"><small>Check this custom checkbox</small></label>
+                     for="cat_all"><small>All Categories</small></label>
             </div>
-            <div class="custom-control custom-checkbox mb-2">
-              <input type="checkbox"
+
+            <div class="custom-control custom-radio mb-2"
+                 v-for="(category, key) in categories"
+                 :key="key">
+              <input type="radio"
                      class="custom-control-input"
-                     id="customCheck2">
+                     name="category"
+                     v-on:change="filterProducts"
+                     v-model="filter.category"
+                     :value="category.id"
+                     :id="'cat'+category.id">
               <label class="custom-control-label"
-                     for="customCheck2"><small>Check this custom checkbox</small></label>
-            </div>
-            <div class="custom-control custom-checkbox mb-2">
-              <input type="checkbox"
-                     class="custom-control-input"
-                     id="customCheck3">
-              <label class="custom-control-label"
-                     for="customCheck3"><small>Check this custom checkbox</small></label>
-            </div>
-            <div class="custom-control custom-checkbox mb-2">
-              <input type="checkbox"
-                     class="custom-control-input"
-                     id="customCheck4">
-              <label class="custom-control-label"
-                     for="customCheck4"><small>Check this custom checkbox</small></label>
+                     :for="'cat'+category.id"><small>{{ category.name }}</small></label>
             </div>
           </div>
-
 
         </div>
       </div>
@@ -129,6 +130,7 @@ export default {
   data: function () {
     return {
       products: [],
+      categories: [],
       show_filter: false,
       show_skeleton: false,
       show_spinner: false,
@@ -136,15 +138,22 @@ export default {
       filter: {
         min_bid: 0,
         sort: 'popular',
-        categories: [],
+        category: null,
         page: 1,
         limit: 6,
       },
+      sort_options: new Map([
+        ['popular', 'Popular'],
+        ['date_asc', 'Closing Date (Closet)'],
+        ['date_desc', 'Closing Date (Oldest)'],
+        ['min_bid', 'Minimum Bid']
+      ]),
       formatter: v => `$${('' + v).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`,
     }
   },
   mounted: function () {
     this.fetchProducts();
+    this.fetchCategories();
   },
   methods: {
     fetchProducts: function () {
@@ -178,9 +187,20 @@ export default {
             });
       }
     },
+    fetchCategories: function () {
+      api
+          .get(`/products/categories`)
+          .then(response => {
+            this.categories = response.data.data;
+          });
+    },
+    filterProducts: function () {
+      this.filter.page = 1;
+      this.fetchProducts();
+    },
     toggleFilter: function () {
       this.show_filter = !this.show_filter;
-    }
+    },
   }
 }
 </script>
