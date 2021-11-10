@@ -43,7 +43,7 @@
           <div class="row mb-3">
             <div class="col-6">
               <p class="mb-1">Last Bid Made</p>
-              <h4>$15</h4>
+              <h4>${{ product.highest_bid }}</h4>
             </div>
             <div class="col-6">
               <p class="mb-1">Available Until</p>
@@ -68,19 +68,12 @@
       </div>
     </div>
 
-    <modal title="Place a bid"
-           size="sm"
-           ref="bid_modal"
-           oktext="Place Bid">
-      <form ref="form">
-        <div class="form-group">
-          <label>Bid Amount ($)</label>
-          <input type="number"
-                 class="form-control"
-                 placeholder="min $75">
-        </div>
-      </form>
-    </modal>
+    <template v-if="product">
+      <ProductBid
+          ref="pdt_bid"
+          :product="product"
+          @bidplaced="handleBidCreation"></ProductBid>
+    </template>
 
   </div>
 </template>
@@ -89,12 +82,14 @@
 import {api} from "../../plugins/api";
 import {Skeleton} from 'vue-loading-skeleton';
 import CountdownTimer from "../CountdownTimer";
+import ProductBid from "../ProductBid";
 
 export default {
   name: "ProductDetailComponent",
   components: {
     Skeleton,
-    CountdownTimer
+    CountdownTimer,
+    ProductBid
   },
   data: function () {
     return {
@@ -121,7 +116,10 @@ export default {
           });
     },
     showBidModal: function () {
-      this.$refs['bid_modal'].show();
+      this.$refs['pdt_bid'].showModal();
+    },
+    handleBidCreation: function ($product) {
+      this.product = $product
     }
   }
 }

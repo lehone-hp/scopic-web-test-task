@@ -20,6 +20,7 @@ class ProductResource extends JsonResource
             'name' => $this->name,
             'slug' => $this->slug,
             'min_bid' => $this->min_bid,
+            'highest_bid' => $this->highestBid() ? $this->highestBid()->amount : 0,
             'category' => $this->category->name,
             'close_date' => [
                 'date' => $this->close_date,

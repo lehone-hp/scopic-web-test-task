@@ -24,4 +24,6 @@ Route::group(['namespace' => 'API'], function() {
 
     Route::get('products', 'ProductController@fetchAll');
     Route::get('products/{slug}', 'ProductController@fetchBySlug');
+
+    Route::post('bid/create', 'BidController@placeBid');
 });
