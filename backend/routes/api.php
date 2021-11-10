@@ -18,7 +18,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::group(['namespace' => 'API'], function() {
+Route::group(['namespace' => 'API'], function () {
     Route::post('login', 'Auth\LoginController@login');
     Route::get('products/categories', 'ProductCategoryController@fetchAll');
 
@@ -30,4 +30,6 @@ Route::group(['namespace' => 'API'], function() {
 
     Route::get('bids', 'BidController@fetchBid');
 
+    Route::get('/user/settings/{user_id}', 'UserController@fetchSettings');
+    Route::post('/user/settings', 'UserController@updateSettings');
 });

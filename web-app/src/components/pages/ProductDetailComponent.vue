@@ -59,6 +59,7 @@
           </button>
 
           <ProductAutoBid
+              @autobid="updateProduct"
               :product="product"></ProductAutoBid>
         </template>
       </div>
@@ -68,7 +69,7 @@
       <ProductBid
           ref="pdt_bid"
           :product="product"
-          @bidplaced="handleBidCreation"></ProductBid>
+          @bidplaced="updateProduct"></ProductBid>
     </template>
 
   </div>
@@ -108,7 +109,7 @@ export default {
             this.fetchBid();
           })
           .catch(() => {
-            // todo: alert error occurred
+
           })
           .then(() => {
             this.show_skeleton = false;
@@ -117,7 +118,7 @@ export default {
     showBidModal: function () {
       this.$refs['pdt_bid'].showModal();
     },
-    handleBidCreation: function ($product) {
+    updateProduct: function ($product) {
       this.product = $product
     }
   }

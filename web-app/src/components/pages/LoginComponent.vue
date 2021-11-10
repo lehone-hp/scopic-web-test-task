@@ -84,7 +84,7 @@ export default {
               }
             })
             .catch(() => {
-              // todo: alert error occurred
+
             })
             .then(() => {
               this.show_spinner = false;

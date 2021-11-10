@@ -62,6 +62,7 @@ class User extends Authenticatable
         if ($this->setting->max_auto_bid) {
             $used_reserve = $this->bids()
                 ->where('auto_bid', true)->sum('amount');
+
             return max($this->setting->max_auto_bid - $used_reserve, 0);
         }
 

@@ -67,10 +67,15 @@ export default {
                 this.error_msg = response.data.message;
               } else if (status === 'success') {
                 this.bid = response.data.bid;
+                this.$toast.success(response.data.message);
+
+                if (response.data.product) {
+                  this.$emit('autobid', response.data.product);
+                }
               }
             })
             .catch(() => {
-              // todo: alert error occurred
+
             })
             .then(() => {
               this.show_spinner = false;

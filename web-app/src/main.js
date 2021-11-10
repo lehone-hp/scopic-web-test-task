@@ -3,6 +3,8 @@ import App from './App.vue'
 import router from "./plugins/routes";
 import store from "./plugins/vuex-store";
 import Vuelidate from 'vuelidate'
+import Toast, {POSITION} from "vue-toastification";
+import "vue-toastification/dist/index.css";
 import {library} from '@fortawesome/fontawesome-svg-core'
 import {faFilter} from '@fortawesome/free-solid-svg-icons'
 import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
@@ -22,6 +24,10 @@ Vue.config.productionTip = false
 
 Vue.use(BootstrapVue)
 Vue.use(Vuelidate)
+Vue.use(Toast, {
+    position: POSITION.BOTTOM_LEFT,
+    hideProgressBar: true
+});
 
 // Font Awesome
 Vue.component('font-awesome-icon', FontAwesomeIcon)

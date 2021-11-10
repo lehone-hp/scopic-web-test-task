@@ -91,7 +91,7 @@ export default {
                 this.error_msg = response.data.message
               } else if (status === 'success') {
 
-                // todo: toast success message
+                this.$toast.success(response.data.message);
 
                 this.hideModal();
                 this.$emit('bidplaced', response.data.product);
@@ -102,7 +102,7 @@ export default {
               }
             })
             .catch(() => {
-              // todo: alert error occurred
+
             })
             .then(() => {
               this.show_spinner = false;

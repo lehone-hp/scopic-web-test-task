@@ -89,22 +89,30 @@ class BidController extends Controller
             // activate auto-bidding for this product
             $highest_bid = $product->highestBid();
 
-            // check if user has enough reserve bid then highest bid bid by 1
-            if ($highest_bid && $user->reserveBidAmount() > $highest_bid->amount) {
-                $bid = $product->placeBid($user, $highest_bid->amount + 1);
-                $bid->update(['auto_bid' => true]);
-
-                return response()->json([
-                    'status' => 'success',
-                    'message' => 'Auto bidding has been activated for this product',
-                    'bid' => new BidResource($bid)
-                ]);
+            // check if there it atleast one bid for this product
+            if (!$highest_bid) {
+                $bid = $product->placeBid($user, $product->min_bid);
             } else {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Sorry, you do not have enough reserve for auto-bidding',
-                ]);
+                if ($highest_bid->user_id == $user->id) {
+                    $bid = $highest_bid;
+                } else if ($user->reserveBidAmount() > $highest_bid->amount) {
+                    // check if user has enough reserve bid then highest bid by 1
+                    $bid = $product->placeBid($user, $highest_bid->amount + 1);
+                } else {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Sorry, you do not have enough reserve for auto-bidding',
+                    ]);
+                }
             }
+
+            $bid->update(['auto_bid' => true]);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Auto bidding has been activated for this product',
+                'bid' => new BidResource($bid),
+                'product' => new ProductResource($product)
+            ]);
         }
     }
 
