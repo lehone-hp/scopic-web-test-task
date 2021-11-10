@@ -3,7 +3,7 @@
     <div class="col-sm-9 col-lg-6 col-xl-5">
       <div class="card card-body border-0 rounded shadow-sm p-4 px-lg-5">
         <h3 class="text-center mb-4 mb-lg-5">Login</h3>
-        <small class="d-block text-danger text-center" v-if="error_msg">{{ error_msg }}</small>
+        <small class="d-block text-danger text-center">{{ error_msg }}</small>
         <form @submit.prevent="login">
           <div class="form-group">
             <label>Username</label>

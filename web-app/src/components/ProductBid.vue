@@ -6,7 +6,7 @@
            oktext="Place Bid"
            :hidefooter="true">
 
-      <small class="d-block text-danger text-center" v-if="error_msg">{{ error_msg }}</small>
+      <small class="d-block text-danger text-center">{{ error_msg }}</small>
 
       <form ref="form" @submit.prevent="placeBid">
         <div class="form-group">
@@ -80,7 +80,7 @@ export default {
       if (!this.$v.$invalid) {
         this.show_spinner = true;
         api
-            .post(`/bid/create`, {
+            .post(`/products/bid/create`, {
               ...this.form,
               user_id: this.authUser.id,
               product_id: this.product.id

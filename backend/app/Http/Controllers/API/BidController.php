@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Bid;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\BidResource;
 use App\Http\Resources\ProductResource;
 use App\Product;
 use App\User;
@@ -54,5 +56,62 @@ class BidController extends Controller
             'message' => 'Big placed successfully',
             'product' => new ProductResource($product)
         ]);
+    }
+
+    public function toggleAutoBid(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'required|exists:users,id',
+            'product_id' => 'required|exists:products,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $validator->errors()->first()
+            ]);
+        }
+
+        $user = User::find($request->get('user_id'));
+        $product = Product::find($request->get('product_id'));
+
+        $bid = Bid::where('user_id', $user->id)->where('product_id', $product->id)->first();
+
+        // if auto-bidding is active, deactivate
+        if ($bid && $bid->auto_bid) {
+            $bid->update(['auto_bid' => false]);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Auto bidding has been turned off for this product',
+                'bid' => new BidResource($bid)
+            ]);
+        } else {
+            // activate auto-bidding for this product
+            $highest_bid = $product->highestBid();
+
+            // check if user has enough reserve bid then highest bid bid by 1
+            if ($highest_bid && $user->reserveBidAmount() > $highest_bid->amount) {
+                $bid = $product->placeBid($user, $highest_bid->amount + 1);
+                $bid->update(['auto_bid' => true]);
+
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Auto bidding has been activated for this product',
+                    'bid' => new BidResource($bid)
+                ]);
+            } else {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Sorry, you do not have enough reserve for auto-bidding',
+                ]);
+            }
+        }
+    }
+
+    public function fetchBid(Request $request)
+    {
+        $bid = Bid::where('user_id', $request->get('user_id'))
+            ->where('product_id', $request->get('product_id'))->first();
+        return $bid ? new BidResource($bid) : [];
     }
 }

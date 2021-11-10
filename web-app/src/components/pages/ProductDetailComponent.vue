@@ -57,13 +57,9 @@
               v-on:click="showBidModal"
               class="default-btn btn-block mb-4">Place a bid
           </button>
-          <div class="custom-control custom-checkbox">
-            <input type="checkbox"
-                   class="custom-control-input"
-                   id="autobid">
-            <label class="custom-control-label"
-                   for="autobid"><span>Activate the <router-link to="/settings">auto-biding</router-link></span></label>
-          </div>
+
+          <ProductAutoBid
+              :product="product"></ProductAutoBid>
         </template>
       </div>
     </div>
@@ -83,13 +79,15 @@ import {api} from "../../plugins/api";
 import {Skeleton} from 'vue-loading-skeleton';
 import CountdownTimer from "../CountdownTimer";
 import ProductBid from "../ProductBid";
+import ProductAutoBid from "../ProductAutoBid";
 
 export default {
   name: "ProductDetailComponent",
   components: {
     Skeleton,
     CountdownTimer,
-    ProductBid
+    ProductBid,
+    ProductAutoBid
   },
   data: function () {
     return {
@@ -107,6 +105,7 @@ export default {
           .get(`/products/${slug}`)
           .then(response => {
             this.product = response.data.data;
+            this.fetchBid();
           })
           .catch(() => {
             // todo: alert error occurred
