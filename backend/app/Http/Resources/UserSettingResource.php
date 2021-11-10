@@ -14,10 +14,19 @@ class UserSettingResource extends JsonResource
      */
     public function toArray($request)
     {
+        $warning = '';
+        if ($this->auto_bid_reserve) {
+            if ($this->user->reservePercentage() >= $this->auto_bid_reserve) {
+                $warning = 'You have used up to '.$this->auto_bid_reserve.'% of reserved bids.';
+            }
+        }
+
+
         return [
             'user_id' => $this->user_id,
             'max_auto_bid' => $this->max_auto_bid,
-            'auto_bid_reserve' => $this->auto_bid_reserve
+            'auto_bid_reserve' => $this->auto_bid_reserve,
+            'warning' => $warning
         ];
     }
 }

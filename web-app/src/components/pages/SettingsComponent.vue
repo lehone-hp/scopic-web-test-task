@@ -6,7 +6,11 @@
     </div>
 
     <div class="row">
-      <div class="col-md-8 col-lg-6 col-xl-4">
+      <div class="col-md-8 col-lg-6 col-xl-5">
+
+        <div class="alert alert-warning" v-if="form.warning">
+          {{ form.warning }}
+        </div>
 
         <form @submit.prevent="updateSettings">
           <div class="mb-5">
@@ -51,7 +55,8 @@
             <button-spinner
                 class="btn-block"
                 @click="updateSettings"
-                :spinner="show_spinner">Save</button-spinner>
+                :spinner="show_spinner">Save
+            </button-spinner>
           </div>
         </form>
       </div>
@@ -73,7 +78,7 @@ export default {
       error_msg: '',
       form: {
         max_auto_bid: null,
-        auto_bid_reserve: null
+        auto_bid_reserve: null,
       }
     }
   },
@@ -116,9 +121,14 @@ export default {
               } else if (status === 'success') {
                 this.$toast.success(response.data.message);
                 this.$v.$reset();
+
+                if(response.data.setting) {
+                  this.form = response.data.setting;
+                }
               }
             })
-            .catch(() => {})
+            .catch(() => {
+            })
             .then(() => {
               this.show_spinner = false;
             });

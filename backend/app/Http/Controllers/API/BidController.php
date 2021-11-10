@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Bid;
+use App\Events\BidPlaced;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\BidResource;
 use App\Http\Resources\ProductResource;
@@ -49,7 +50,9 @@ class BidController extends Controller
             ]);
         }
 
-        $bid = $product->placeBid($user, $bid_amount);
+        $product->placeBid($user, $bid_amount);
+
+        event(new BidPlaced($product));
 
         return response()->json([
             'status' => 'success',
@@ -95,7 +98,7 @@ class BidController extends Controller
             } else {
                 if ($highest_bid->user_id == $user->id) {
                     $bid = $highest_bid;
-                } else if ($user->reserveBidAmount() > $highest_bid->amount) {
+                } else if ($user->availableReserveAmt() > $highest_bid->amount) {
                     // check if user has enough reserve bid then highest bid by 1
                     $bid = $product->placeBid($user, $highest_bid->amount + 1);
                 } else {

@@ -45,7 +45,8 @@ class UserController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Setting updated successfully'
+            'message' => 'Setting updated successfully',
+            'setting' => new UserSettingResource(User::find($request->get('user_id'))->setting)
         ]);
     }
 }

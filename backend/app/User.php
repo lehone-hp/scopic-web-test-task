@@ -53,12 +53,14 @@ class User extends Authenticatable
         return $this->hasOne(UserSetting::class);
     }
 
-    public function bids() {
+    public function bids()
+    {
         return $this->hasMany(Bid::class, 'user_id');
     }
 
-    // Get the value of the auto maximum bid amount which is available for auto bidding
-    public function reserveBidAmount() {
+    // Get the value of the auto maximum bid amount which is available for auto-bidding
+    public function availableReserveAmt()
+    {
         if ($this->setting->max_auto_bid) {
             $used_reserve = $this->bids()
                 ->where('auto_bid', true)->sum('amount');
@@ -67,5 +69,13 @@ class User extends Authenticatable
         }
 
         return 0;
+    }
+
+    // get the percentage of maximum auto bid used
+    public function reservePercentage()
+    {
+        // (total_reserve/max_auto_bid)*100
+        return (($this->setting->max_auto_bid - $this->availableReserveAmt())
+                / $this->setting->max_auto_bid) * 100;
     }
 }
