@@ -42,6 +42,13 @@ class BidController extends Controller
             ]);
         }
 
+        if ($highest_bid && $highest_bid->user_id == $user->id) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'You are currently the highest bidder for this item'
+            ]);
+        }
+
         // check if bid is less than or equal to the highest bid
         if ($highest_bid && $bid_amount <= $highest_bid->amount) {
             return response()->json([
